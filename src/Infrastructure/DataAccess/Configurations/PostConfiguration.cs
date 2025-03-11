@@ -27,8 +27,8 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(p => p.LastModified)
             .HasColumnName("last_modified");
         
-        builder.HasOne<AppUser>()
+        /*builder.HasOne<AppUser>()
             .WithMany()
-            .HasForeignKey(p => p.UserId);
+            .HasForeignKey(p => p.UserId);*/
     }
 }

@@ -5,7 +5,7 @@ using Nexus.Domain.Entities;
 
 namespace Nexus.Infrastructure.DataAccess;
 
-public class NexusDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int> 
+public class NexusDbContext : IdentityDbContext<AppUser, AppRole, int> 
 {
     public NexusDbContext() {}
     public NexusDbContext(DbContextOptions<NexusDbContext> options) : base(options)
@@ -18,8 +18,11 @@ public class NexusDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
     public DbSet<PostLike> PostLikes {get; set;}
     public DbSet<PostRepost> PostReposts {get; set;}
     public DbSet<CommentLike> CommentLikes {get; set;}
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(typeof(NexusDbContext).Assembly);
+
+        base.OnModelCreating(builder);
     }
 }
