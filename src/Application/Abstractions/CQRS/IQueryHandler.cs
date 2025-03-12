@@ -2,4 +2,4 @@ using MediatR;
 
 namespace Nexus.Application.Abstractions;
 
-public interface IQueryHandler : IRequestHandler<IQuery> {}
+public interface IQueryHandler<TQuery> : IRequestHandler<TQuery, Result> where TQuery : IQuery {}

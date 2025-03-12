@@ -18,7 +18,7 @@ public class Result
     /// <typeparam name="TResult"></typeparam>
     /// <param name="resultValue"></param>
     /// <returns></returns>
-    public static Result Success<TResult>(TResult resultValue) => new Result<TResult>() {Succeed = true, ResultValue = resultValue};
+    public static Result<TResult> Success<TResult>(TResult resultValue) => new Result<TResult>() {Succeed = true, ResultValue = resultValue};
     /// <summary>
     /// Returns a plain failed result
     /// </summary>
@@ -30,7 +30,7 @@ public class Result
     /// <typeparam name="TResult"></typeparam>
     /// <param name="resultValue"></param>
     /// <returns></returns>
-    public static Result Failed<TResult>(TResult resultValue) => new Result<TResult>() {Succeed = false, ResultValue = resultValue};
+    public static Result<TResult> Failed<TResult>(TResult resultValue) => new Result<TResult>() {Succeed = false, ResultValue = resultValue};
 
 } 
 public class Result<TResult> : Result 

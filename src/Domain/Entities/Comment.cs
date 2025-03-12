@@ -4,10 +4,10 @@ namespace Nexus.Domain.Entities;
 
 public class Comment : IEntity
 {
-    public int Id {get; init;}
-    public int PostId {get; init;}
-    public int UserId {get; init;}
-    public string Content {get; init;} = null!;
-    public DateTime DateCreated {get; init;}
-    public DateTime LastModified {get; init;}
+    public int Id {get; set;}
+    public int PostId {get; set;}
+    public int UserId {get; set;}
+    public string Content {get; set;} = null!;
+    public DateTime DateCreated {get; set;}
+    public DateTime LastModified {get; set;}
 }

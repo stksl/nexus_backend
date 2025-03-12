@@ -4,8 +4,8 @@ namespace Nexus.Domain.Entities;
 
 public class PostRepost : IEntity 
 {
-    public int Id {get; init;}
-    public int UserId {get; init;}
-    public int PostId {get; init;}
-    public DateTime RepostDate {get; init;}
+    public int Id {get; set;}
+    public int UserId {get; set;}
+    public int PostId {get; set;}
+    public DateTime RepostDate {get; set;}
 }

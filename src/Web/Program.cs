@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Application;
+using Nexus.Domain.Entities;
 using Nexus.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,18 +15,19 @@ builder.Services.AddInfrastructureDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
 
 var app = builder.Build();
-
+ 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
-app.MapPost("/create", async ([FromForm]CreatePostCommand createPostCommand, [FromServices]IMediator mediator) => 
+app.Map("/get", async ([FromQuery]int id, [FromServices]IMediator mediator) => 
 {
-    Result result = await mediator.Send(createPostCommand);
+    Result result = await mediator.Send(new GetPostByIdQuery(id));
+    if (result.Succeed)
+        System.Console.WriteLine(((Result<Post>)result).ResultValue!.Content);
 
-    System.Console.WriteLine(result.Succeed);
 }).DisableAntiforgery();
 
 app.Run();

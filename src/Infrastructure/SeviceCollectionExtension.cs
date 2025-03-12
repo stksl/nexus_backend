@@ -1,9 +1,11 @@
+using System.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.Application.Abstractions;
 using Nexus.Infrastructure.DataAccess;
+using Npgsql;
 
 namespace Nexus.Infrastructure;
 
@@ -12,7 +14,8 @@ public static class ServiceCollectionExtension
 
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration config) 
     {
-        return AddNexusDbContext(services, config)
+        return services.AddTransient<IDbConnection>(sp => new NpgsqlConnection(config.GetConnectionString("Npgsql")))
+            .AddNexusDbContext(config)
             .AddNexusIdentity()
             .AddRepositories()
             .AddUnitOfWork();
@@ -35,7 +38,8 @@ public static class ServiceCollectionExtension
     }
     private static IServiceCollection AddRepositories(this IServiceCollection services) 
     {
-        return services.AddScoped<IPostRepository, PostRepository>();
+        return services.AddScoped<IPostRepository, PostRepository>()
+            .AddScoped<IPostReadRepository, PostReadRepository>();
     }
     private static IServiceCollection AddUnitOfWork(this IServiceCollection services) 
     {
