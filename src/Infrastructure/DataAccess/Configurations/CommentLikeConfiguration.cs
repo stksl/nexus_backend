@@ -8,6 +8,8 @@ public class CommentLikeConfiguration : IEntityTypeConfiguration<CommentLike>
 {
     public void Configure(EntityTypeBuilder<CommentLike> builder) 
     {
+        builder.ToTable("CommentLikes");
+
         builder.HasKey(cl => cl.Id);
 
         builder.HasOne<Comment>()

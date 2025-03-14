@@ -12,8 +12,9 @@ public class NexusDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
         
     }
     public DbSet<Post> Posts {get; set;}
-    public DbSet<Comment> Comments {get; set;}
     public DbSet<PostTag> PostTags {get; set;}
+    public DbSet<Comment> Comments {get; set;}
+    public DbSet<PostTag> Tags {get; set;}
     public DbSet<PostLike> PostLikes {get; set;}
     public DbSet<PostRepost> PostReposts {get; set;}
     public DbSet<CommentLike> CommentLikes {get; set;}

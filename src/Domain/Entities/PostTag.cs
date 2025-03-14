@@ -2,8 +2,8 @@ using Nexus.SharedKernel;
 
 namespace Nexus.Domain.Entities;
 
-public class PostTag : IEntity 
+public class PostTag
 {
-    public int Id {get; set;}
-    public string Name {get; set;} = null!;
+    public int PostId {get; set;}
+    public int TagId {get; set;}
 }

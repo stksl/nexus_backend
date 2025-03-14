@@ -8,7 +8,10 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 {
     public void Configure(EntityTypeBuilder<Post> builder) 
     {
+        builder.ToTable("Posts");
+
         const int contentLength = 0b1 << 14; // 16kb
+
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Headline)
@@ -27,8 +30,8 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.Property(p => p.LastModified)
             .HasColumnName("last_modified");
         
-        /*builder.HasOne<AppUser>()
+        builder.HasOne<AppUser>()
             .WithMany()
-            .HasForeignKey(p => p.UserId);*/
+            .HasForeignKey(p => p.UserId);
     }
 }

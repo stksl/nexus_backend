@@ -1,11 +1,11 @@
 using System.Text;
 using Hangfire;
-using Hangfire.Common;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Nexus.Application;
 using Nexus.Application.Abstractions;
+using Nexus.Application.Dtos;
 using Nexus.Infrastructure.DataAccess;
 
 namespace Nexus.Infrastructure;
@@ -27,7 +27,7 @@ public class AuthService : IAuthService
         _config = config;
     }
 
-    public async Task Register(UserRegisterRequest registerRequest) 
+    public async Task Register(RegisterRequest registerRequest) 
     {
         if (await _userManager.FindByEmailAsync(registerRequest.Email) != null)
             throw new AuthException("User with the same email already exists!");

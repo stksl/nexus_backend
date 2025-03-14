@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Nexus.Infrastructure;
+namespace Nexus.Infrastructure.Extensions;
 
 public static class NexusDbContextExtension 
 {

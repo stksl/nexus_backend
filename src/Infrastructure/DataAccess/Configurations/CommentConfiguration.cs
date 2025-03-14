@@ -8,6 +8,8 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder) 
     {
+        builder.ToTable("Comments");
+
         const int contentLength = 0b1 << 12; // 4kb
         builder.HasKey(c => c.Id);
 

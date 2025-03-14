@@ -10,7 +10,7 @@ using Nexus.Infrastructure.DataAccess;
 using Nexus.Infrastructure.Smtp;
 using Npgsql;
 
-namespace Nexus.Infrastructure;
+namespace Nexus.Infrastructure.Extensions;
 
 public static class ServiceCollectionExtension 
 {

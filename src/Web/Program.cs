@@ -1,17 +1,16 @@
 using MediatR;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Application;
 using Nexus.Domain.Entities;
-using Nexus.Infrastructure;
+using Nexus.Infrastructure.Extensions;
+using Nexus.Application.Extensions;
 using Nexus.Application.Abstractions;
-using Nexus.Infrastructure.DataAccess;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
+using Nexus.Application.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
-// убрать коммент в PostConfiguration.cs
+
 builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
@@ -35,7 +34,7 @@ app.Map("/get", async ([FromQuery]int id, [FromServices]IMediator mediator) =>
         System.Console.WriteLine(((Result<Post>)result).ResultValue!.Content);
 
 }).DisableAntiforgery();
-app.MapPost("/register", async ([FromBody]UserRegisterRequest registerRequest, [FromServices]IAuthService authService) => 
+app.MapPost("/register", async ([FromBody]RegisterRequest registerRequest, [FromServices]IAuthService authService) => 
 {
     await authService.Register(registerRequest);
 }).DisableAntiforgery();

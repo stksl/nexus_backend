@@ -8,6 +8,8 @@ public class PostRespostConfiguration : IEntityTypeConfiguration<PostRepost>
 {
     public void Configure(EntityTypeBuilder<PostRepost> builder) 
     {
+        builder.ToTable("PostReposts");
+
         builder.HasKey(pl => pl.Id);
 
         builder.HasOne<Post>()

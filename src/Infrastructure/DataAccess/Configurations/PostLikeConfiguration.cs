@@ -8,6 +8,8 @@ public class PostLikeConfiguration : IEntityTypeConfiguration<PostLike>
 {
     public void Configure(EntityTypeBuilder<PostLike> builder) 
     {
+        builder.ToTable("PostLikes");
+        
         builder.HasKey(pl => pl.Id);
 
         builder.HasOne<Post>()

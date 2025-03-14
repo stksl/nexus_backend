@@ -1,7 +1,9 @@
+using Nexus.Application.Dtos;
+
 namespace Nexus.Application.Abstractions;
 
 public interface IAuthService 
 {
-    Task Register(UserRegisterRequest registerRequest);
+    Task Register(RegisterRequest registerRequest);
     Task<EmailConfirmResponse> ConfirmEmail(EmailConfirmRequest confirmRequest);
 }
