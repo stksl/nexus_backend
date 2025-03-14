@@ -5,9 +5,8 @@ using Nexus.Domain.Entities;
 
 namespace Nexus.Infrastructure.DataAccess;
 
-public class NexusDbContext : IdentityDbContext<AppUser, AppRole, int> 
+public class NexusDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int> 
 {
-    public NexusDbContext() {}
     public NexusDbContext(DbContextOptions<NexusDbContext> options) : base(options)
     {
         
@@ -21,8 +20,8 @@ public class NexusDbContext : IdentityDbContext<AppUser, AppRole, int>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.ApplyConfigurationsFromAssembly(typeof(NexusDbContext).Assembly);
-
         base.OnModelCreating(builder);
+
+        builder.ApplyConfigurationsFromAssembly(typeof(NexusDbContext).Assembly);
     }
 }

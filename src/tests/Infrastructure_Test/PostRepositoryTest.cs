@@ -14,12 +14,6 @@ public class PostRepositoryTest
 
         using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
         {
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
-        }
-
-        using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
-        {
             Post post = new Post()
             {
                 Id = 1,
@@ -45,12 +39,6 @@ public class PostRepositoryTest
 
         using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
         {
-            dbContext.Database.EnsureDeleted();
-            dbContext.Database.EnsureCreated();
-        }
-
-        using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
-        {
             var post = new Post()
             {
                 Id = 1,
@@ -73,6 +61,38 @@ public class PostRepositoryTest
             int updated = dbContext.SaveChanges();
 
             Assert.Equal(1, updated);
+        }
+    }
+    [Fact]
+    public void Remove_Post_Test() 
+    {
+        var builder = new DbContextOptionsBuilder<NexusDbContext>()
+            .UseInMemoryDatabase(RandomDbName);
+
+        using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
+        {
+            var post = new Post()
+            {
+                Id = 1,
+                Content = "some content",
+                Headline = "some headline",
+                UserId = 1,
+                DateCreated = DateTime.Now,
+                LastModified = DateTime.Now
+            };
+            dbContext.Add(post);
+            dbContext.SaveChanges();
+        }
+
+        using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
+        {
+            var post = dbContext.Posts.First();
+
+            dbContext.Posts.Remove(post);
+
+            int removed = dbContext.SaveChanges();
+
+            Assert.Equal(1, removed);
         }
     }
 }
