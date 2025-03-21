@@ -4,7 +4,7 @@ using System.Transactions;
 using Microsoft.Extensions.Configuration;
 using Nexus.Application.Abstractions;
 
-namespace Nexus.Infrastructure.Smtp;
+namespace Nexus.Infrastructure;
 
 public class EmailSender : IEmailSender
 {

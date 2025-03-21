@@ -4,8 +4,11 @@ namespace Nexus.Infrastructure.Extensions;
 
 public static class NexusDbContextExtension 
 {
-    public static void SeedRoles(RoleManager<IdentityRole<int>> roleManager) 
+    public static async Task SeedRoles(RoleManager<IdentityRole<int>> roleManager) 
     {
+        if (await roleManager.RoleExistsAsync(AppRoles.User))
+            return;
+            
         roleManager.CreateAsync(new IdentityRole<int>() 
         {
             Id = 1,

@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Nexus.Application.Abstractions;
+using Nexus.Application.Auth.Abstractions;
 using Nexus.Infrastructure.DataAccess;
-using Nexus.Infrastructure.Smtp;
 using Npgsql;
 
 namespace Nexus.Infrastructure.Extensions;
@@ -17,7 +17,7 @@ public static class ServiceCollectionExtension
 
     public static IServiceCollection AddInfrastructureDependencies(this IServiceCollection services, IConfiguration config) 
     {
-        return services.AddTransient<IAuthService, AuthService>().AddTransient<ITokenService, JwtTokenService>() // authService, jwtService
+        return services.AddScoped<IAuthService, AuthService>().AddScoped<ITokenService, JwtTokenService>() // authService, jwtService
             .AddTransient<IDbConnection>(sp => new NpgsqlConnection(config.GetConnectionString("Npgsql"))) // connection for dapper
             .AddNexusDbContext(config) // db context
             .AddNexusIdentity() // identity
@@ -56,7 +56,8 @@ public static class ServiceCollectionExtension
     private static IServiceCollection AddRepositories(this IServiceCollection services) 
     {
         return services.AddScoped<IPostRepository, PostRepository>()
-            .AddScoped<IPostReadRepository, PostReadRepository>();
+            .AddScoped<IPostReadRepository, PostReadRepository>()
+            .AddScoped<ITokenRepository, TokenRepository>();
     }
     private static IServiceCollection AddUnitOfWork(this IServiceCollection services) 
     {
@@ -66,7 +67,10 @@ public static class ServiceCollectionExtension
     {
         return services.AddTransient<IEmailSender, EmailSender>()
             .AddHangfire(c => 
-                c.UsePostgreSqlStorage(o => o.UseNpgsqlConnection(config.GetConnectionString("Hangfire"))))
+            {
+                
+                c.UsePostgreSqlStorage(o => o.UseNpgsqlConnection(config.GetConnectionString("Hangfire")));
+            })
             .AddHangfireServer();
     }
 }

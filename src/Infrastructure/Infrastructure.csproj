@@ -29,6 +29,7 @@
     <Nullable>enable</Nullable>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <UserSecretsId>84a8f3fd-c609-4240-981c-1a2dc7ca9963</UserSecretsId>
+    <RootNamespace>Nexus.Infrastructure</RootNamespace>
   </PropertyGroup>
 
 </Project>

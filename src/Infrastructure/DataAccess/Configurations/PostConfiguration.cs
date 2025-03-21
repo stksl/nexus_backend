@@ -15,13 +15,13 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Headline)
-            .HasMaxLength(255)
             .IsRequired()
+            .HasMaxLength(255)
             .HasColumnName("headline");
 
         builder.Property(p => p.Content)
-            .HasMaxLength(contentLength)
             .IsRequired()
+            .HasMaxLength(contentLength)
             .HasColumnName("content");
 
         builder.Property(p => p.DateCreated)

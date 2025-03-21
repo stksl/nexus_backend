@@ -4,10 +4,9 @@ using Nexus.Application;
 using Nexus.Domain.Entities;
 using Nexus.Infrastructure.Extensions;
 using Nexus.Application.Extensions;
-using Nexus.Application.Abstractions;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Text;
-using Nexus.Application.Dtos;
+using Nexus.WebApi.Extensions;
+using Nexus.WebApi;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,17 +15,22 @@ builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddInfrastructureDependencies(builder.Configuration);
+builder.Services.AddWebApiDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
+builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 var app = builder.Build();
- 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapNexusAuthApis();
 app.Map("/get", async ([FromQuery]int id, [FromServices]IMediator mediator) => 
 {
     Result result = await mediator.Send(new GetPostByIdQuery(id));
@@ -34,12 +38,10 @@ app.Map("/get", async ([FromQuery]int id, [FromServices]IMediator mediator) =>
         System.Console.WriteLine(((Result<Post>)result).ResultValue!.Content);
 
 }).DisableAntiforgery();
-app.MapPost("/register", async ([FromBody]RegisterRequest registerRequest, [FromServices]IAuthService authService) => 
+
+using (var scope = app.Services.CreateScope()) 
 {
-    await authService.Register(registerRequest);
-}).DisableAntiforgery();
-app.MapGet("/api/confirm", async ([FromQuery]string id, [FromQuery]string token, [FromServices]IAuthService authService) => 
-{
-    await authService.ConfirmEmail(new EmailConfirmRequest(id, Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token))));
-}).DisableAntiforgery();
+    using var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
+    await NexusDbContextExtension.SeedRoles(roleManager);
+}
 app.Run();
