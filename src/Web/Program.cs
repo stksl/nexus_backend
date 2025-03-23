@@ -7,13 +7,31 @@ using Nexus.Application.Extensions;
 using Nexus.WebApi.Extensions;
 using Nexus.WebApi;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(config =>
+{
+    config.SwaggerDoc("v1", new OpenApiInfo() 
+    {
+        Title = "Nexus backend api",
+        Version = "v1",
+        Description = "Backend API for the Nexus project",
+
+        License = new OpenApiLicense() 
+        {
+            Name = "MIT License",
+            Url = new Uri("https://mit-license.org/")
+        }
+    });
+
+/*     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    config.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename)); */
+});
 
 builder.Services.AddWebApiDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
@@ -31,7 +49,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapNexusAuthApis();
-app.Map("/get", async ([FromQuery]int id, [FromServices]IMediator mediator) => 
+app.Map("/get", async ([FromQuery] int id, [FromServices] IMediator mediator) =>
 {
     Result result = await mediator.Send(new GetPostByIdQuery(id));
     if (result.Succeed)
@@ -39,7 +57,7 @@ app.Map("/get", async ([FromQuery]int id, [FromServices]IMediator mediator) =>
 
 }).DisableAntiforgery();
 
-using (var scope = app.Services.CreateScope()) 
+using (var scope = app.Services.CreateScope())
 {
     using var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
     await NexusDbContextExtension.SeedRoles(roleManager);

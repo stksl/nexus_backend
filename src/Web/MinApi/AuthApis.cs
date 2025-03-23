@@ -7,8 +7,6 @@ using Nexus.Application.Auth.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Security.Claims;
-using System.Runtime.InteropServices;
-using Nexus.Infrastructure;
 namespace Nexus.WebApi;
 
 public static class AuthApis
@@ -71,11 +69,19 @@ public static class AuthApis
             
             return Results.Ok();
         });
+        
+        authApi.MapGet("/logout", (HttpContext context) => 
+        {
+            context.Response.Cookies.Delete("AccessToken");
+            context.Response.Cookies.Delete("RefreshToken");
+
+            return Task.CompletedTask;
+        });
 
         authApi.MapGet("/test",  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]async (HttpContext context, ClaimsPrincipal user) => 
         {
             await context.Response.WriteAsync("asdasdasdasd");
-        });
+        }).WithDescription("test desciption");
     }
 
     private static void AddAccessTokenCookie(HttpContext context, TokenResponse accessToken)

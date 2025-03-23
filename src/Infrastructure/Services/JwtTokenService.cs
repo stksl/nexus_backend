@@ -68,7 +68,7 @@ public class JwtTokenService : ITokenService
     /// <exception cref="AuthException"></exception>
     public async Task<(TokenResponse, TokenResponse)> RefreshTokens(string refreshToken) 
     {
-        RefreshToken? existing = await _tokenRepository.DeleteRefreshToken(refreshToken);
+        RefreshToken? existing = await _tokenRepository.GetRefreshTokenByValue(refreshToken);
         if (existing == null || existing.Expires < DateTime.UtcNow)
             throw new AuthException("Refresh token is invalid");
 
@@ -78,9 +78,11 @@ public class JwtTokenService : ITokenService
             throw new AuthException("No user with specified userId exists");
 
         TokenResponse accessToken = GenerateAccessToken(user.UserName!, user.Email!);
-        TokenResponse rotatedRefreshToken = await GenerateRefreshToken(existing.UserId, existing.Expires);
-        
-        return (accessToken, rotatedRefreshToken);
+
+        existing.Value = Guid.NewGuid().ToString();
+
+        await _unitOfWork.SaveChangesAsync();
+        return (accessToken, new TokenResponse(existing.Value, existing.Expires.Subtract(DateTime.UtcNow)));
     }
     /// <summary>
     /// 

@@ -20,9 +20,6 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .WithMany()
             .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-        
-        builder.Property(r => r.IsRevoked)
-            .HasColumnName("is_revoked");
 
         builder.Property(r => r.Expires)
             .IsRequired()

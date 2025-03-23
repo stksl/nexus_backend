@@ -19,7 +19,6 @@ public class TokenRepository : ITokenRepository
         RefreshToken token = new RefreshToken() 
         {
             Expires = expires ?? DateTime.UtcNow.AddSeconds(double.Parse(_config["JWT:s_RefreshExpires"]!)),
-            IsRevoked = false,
             UserId = userId,
             Value = Guid.NewGuid().ToString() 
         };
@@ -36,14 +35,16 @@ public class TokenRepository : ITokenRepository
     /// </summary>
     /// <param name="tokenValue"></param>
     /// <returns></returns>
-    public async Task<RefreshToken?> DeleteRefreshToken(string tokenValue) 
+    public async Task<bool> DeleteRefreshToken(string tokenValue) 
     {
         var token = await GetRefreshTokenByValue(tokenValue);
 
-        if (token == null) 
-            return null;
-
-        _refreshTokens.Remove(token);
-        return token;
+        if (token != null) 
+        {
+            _refreshTokens.Remove(token);
+            return true;
+        }
+        
+        return false;
     }
 }

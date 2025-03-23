@@ -2,12 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Nexus.Domain.Entities;
 using Nexus.Infrastructure.DataAccess;
 
-namespace Infrastructure_Test;
+namespace Nexus.Tests;
 
 public class PostRepositoryTest
 {
     [Fact]
-    public void Create_Post_Test()
+    public void CreatePost_Test()
     {
         var builder = new DbContextOptionsBuilder<NexusDbContext>()
             .UseInMemoryDatabase(RandomDbName);
@@ -32,7 +32,7 @@ public class PostRepositoryTest
         }
     }
     [Fact]
-    public void Update_Post_Test()
+    public void UpdatePost_Test()
     {
         var builder = new DbContextOptionsBuilder<NexusDbContext>()
             .UseInMemoryDatabase(RandomDbName);
@@ -64,7 +64,7 @@ public class PostRepositoryTest
         }
     }
     [Fact]
-    public void Remove_Post_Test() 
+    public void RemovePost_Test() 
     {
         var builder = new DbContextOptionsBuilder<NexusDbContext>()
             .UseInMemoryDatabase(RandomDbName);

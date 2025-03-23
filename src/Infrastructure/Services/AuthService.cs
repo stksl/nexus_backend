@@ -16,13 +16,16 @@ public class AuthService : IAuthService
     private readonly ITokenService _tokenService;
     private readonly UserManager<AppUser> _userManager;
     private readonly IConfiguration _config;
+    private readonly IBackgroundJobClient _backgroundJobClient;
     public AuthService(ITokenService tokenService, 
         UserManager<AppUser> userManager,
-        IConfiguration config)
+        IConfiguration config,
+        IBackgroundJobClient backgroundJobClient)
     {
         _tokenService = tokenService;
         _userManager = userManager;
         _config = config;
+        _backgroundJobClient = backgroundJobClient;
     }
 
     public async Task Register(RegisterRequest registerRequest) 
@@ -31,6 +34,7 @@ public class AuthService : IAuthService
             throw new AuthException("User with the same email already exists!");
         if (await _userManager.FindByNameAsync(registerRequest.Username) != null)
             throw new AuthException("User with the same name already exists!");
+
         AppUser user = new AppUser() 
         {
             Email = registerRequest.Email,
@@ -49,7 +53,7 @@ public class AuthService : IAuthService
         {
             throw new AuthException(string.Join('\n', roleResult.Errors.Select(e => e.Description)));
         }
-
+        
         string token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
         string encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
@@ -57,7 +61,7 @@ public class AuthService : IAuthService
         string verificationBody = 
             $"Click <a href=\"{_config["AppUrl"]}/api/auth/confirm?id={user.Id}&token={encodedToken}\">here</a> to verify your email.";
 
-        BackgroundJob.Enqueue<IEmailSender>(emailSender => 
+        _backgroundJobClient.Enqueue<IEmailSender>(emailSender => 
             emailSender.SendMailAsync(registerRequest.Email, "Email Verification", verificationBody));
     }
 
