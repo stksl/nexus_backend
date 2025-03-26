@@ -8,6 +8,10 @@ namespace Nexus.Infrastructure.DataAccess;
 
 public class NexusDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int> 
 {
+    public NexusDbContext()
+    {
+        
+    }
     public NexusDbContext(DbContextOptions<NexusDbContext> options) : base(options)
     {
         

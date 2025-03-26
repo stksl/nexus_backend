@@ -18,10 +18,12 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
             .IsRequired();
 
         builder.Property(c => c.DateCreated)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnName("date_created");
 
         builder.Property(c => c.LastModified)
-            .IsRequired();
+            .IsRequired()
+            .HasColumnName("last_modified");
 
         builder.HasOne<AppUser>()
             .WithMany()

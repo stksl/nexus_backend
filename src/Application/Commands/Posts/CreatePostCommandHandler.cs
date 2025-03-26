@@ -1,10 +1,11 @@
+using System.Security.Claims;
 using AutoMapper;
 using Nexus.Application.Abstractions;
 using Nexus.Domain.Entities;
 
 namespace Nexus.Application;
 
-public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand>
+public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, int>
 {
     private readonly IPostRepository _postRepository;
     private readonly IUnitOfWork _unitOfWork;
@@ -15,13 +16,15 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand>
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
-    public async Task<Result> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
         Post post = _mapper.Map<CreatePostCommand, Post>(request);
+
+        post.DateCreated = DateTime.UtcNow;
 
         await _postRepository.AddPost(post);
         await _unitOfWork.SaveChangesAsync();
 
-        return Result.Success();
+        return Result.Success(post.Id);
     }
 }

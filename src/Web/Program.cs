@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
 
+builder.Services.AddControllers();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>
 {
@@ -57,6 +59,7 @@ app.Map("/get", async ([FromQuery] int id, [FromServices] IMediator mediator) =>
 
 }).DisableAntiforgery();
 
+app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     using var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();

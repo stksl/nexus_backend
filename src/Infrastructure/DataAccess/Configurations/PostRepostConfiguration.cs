@@ -10,14 +10,18 @@ public class PostRespostConfiguration : IEntityTypeConfiguration<PostRepost>
     {
         builder.ToTable("PostReposts");
 
-        builder.HasKey(pl => pl.Id);
+        builder.HasKey(pr => pr.Id);
 
         builder.HasOne<Post>()
             .WithMany()
-            .HasForeignKey(pl => pl.PostId);
+            .HasForeignKey(pr => pr.PostId);
 
         builder.HasOne<AppUser>()
             .WithMany()
-            .HasForeignKey(pl => pl.UserId);
+            .HasForeignKey(pr => pr.UserId);
+        
+        builder.Property(pr => pr.RepostDate)
+            .IsRequired()
+            .HasColumnName("repost_date");
     }
 }

@@ -25,9 +25,11 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
             .HasColumnName("content");
 
         builder.Property(p => p.DateCreated)
+            .IsRequired()
             .HasColumnName("date_created");
 
         builder.Property(p => p.LastModified)
+            .IsRequired()
             .HasColumnName("last_modified");
         
         builder.HasOne<AppUser>()

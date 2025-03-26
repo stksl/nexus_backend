@@ -1,4 +1,8 @@
+using System.Data.Common;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
+using Moq;
+using Moq.Dapper;
 using Nexus.Domain.Entities;
 using Nexus.Infrastructure.DataAccess;
 
@@ -6,93 +10,76 @@ namespace Nexus.Tests;
 
 public class PostRepositoryTest
 {
-    [Fact]
-    public void CreatePost_Test()
+    private Mock<DbConnection> dbConnectionMock;
+    public PostRepositoryTest()
     {
-        var builder = new DbContextOptionsBuilder<NexusDbContext>()
-            .UseInMemoryDatabase(RandomDbName);
-
-        using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
-        {
-            Post post = new Post()
-            {
-                Id = 1,
-                Content = "some content",
-                Headline = "some headline",
-                UserId = 1,
-                DateCreated = DateTime.Now,
-                LastModified = DateTime.Now
-            };
-
-            dbContext.Add(post);
-
-            int saved = dbContext.SaveChanges();
-
-            Assert.Equal(1, saved);
-        }
+        dbConnectionMock = new Mock<DbConnection>();
     }
     [Fact]
-    public void UpdatePost_Test()
+    public async Task CreatePost_Test()
     {
         var builder = new DbContextOptionsBuilder<NexusDbContext>()
             .UseInMemoryDatabase(RandomDbName);
 
-        using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
+        using NexusDbContext dbContext = new NexusDbContext(builder.Options);
+
+        PostRepository postRepository = new PostRepository(dbContext);
+
+        Post post = new Post() 
         {
-            var post = new Post()
-            {
-                Id = 1,
-                Content = "some content",
-                Headline = "some headline",
-                UserId = 1,
-                DateCreated = DateTime.Now,
-                LastModified = DateTime.Now
-            };
-            dbContext.Add(post);
-            dbContext.SaveChanges();
-        }
+            Content = "some content",
+            Headline = "some headline",
+            DateCreated = DateTime.UtcNow,
 
-        using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
-        {
-            var post = dbContext.Posts.First();
+        };
 
-            post.Headline = "Updated";
+        await postRepository.AddPost(post);
+        int saved = await dbContext.SaveChangesAsync();
 
-            int updated = dbContext.SaveChanges();
-
-            Assert.Equal(1, updated);
-        }
+        Assert.Equal(expected: 1, actual: saved);
     }
     [Fact]
-    public void RemovePost_Test() 
+    public async Task GetPostById_Test() 
     {
-        var builder = new DbContextOptionsBuilder<NexusDbContext>()
-            .UseInMemoryDatabase(RandomDbName);
-
-        using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
+        Post expected = new Post() 
         {
-            var post = new Post()
+            Headline = "some other headline",
+        };
+
+        dbConnectionMock.SetupDapperAsync(dbConnection => 
+            dbConnection.QueryFirstOrDefaultAsync<Post>(It.IsAny<string>(), null, null, null, null))
+        .ReturnsAsync(expected);
+
+        PostReadRepository postReadRepository = new PostReadRepository(dbConnectionMock.Object);
+        Post? actual = await postReadRepository.GetPostById(1);
+
+        Assert.NotNull(actual);
+
+        Assert.Equal(expected: expected.Headline, actual: actual.Headline);
+    }
+
+    [Fact]
+    public async Task GetPostByUser_Test() 
+    {
+        IEnumerable<Post> expected = [
+            new Post() 
             {
-                Id = 1,
-                Content = "some content",
-                Headline = "some headline",
-                UserId = 1,
-                DateCreated = DateTime.Now,
-                LastModified = DateTime.Now
-            };
-            dbContext.Add(post);
-            dbContext.SaveChanges();
-        }
+                Headline = "headline 1",
+            },
+            new Post() 
+            {
+                Headline = "headline 2"
+            }
+        ];
 
-        using (NexusDbContext dbContext = new NexusDbContext(builder.Options))
-        {
-            var post = dbContext.Posts.First();
+        dbConnectionMock.SetupDapperAsync(dbConnection => 
+            dbConnection.QueryAsync<Post>(It.IsAny<string>(), null, null, null, null))
+        .ReturnsAsync(expected);
 
-            dbContext.Posts.Remove(post);
+        PostReadRepository postReadRepository = new PostReadRepository(dbConnectionMock.Object);
 
-            int removed = dbContext.SaveChanges();
+        IEnumerable<Post> actual = await postReadRepository.GetPostsByUser(1);
 
-            Assert.Equal(1, removed);
-        }
+        Assert.Equal(expected, actual, EqualityComparer<Post>.Create((left, right) => left?.Headline == right?.Headline));
     }
 }

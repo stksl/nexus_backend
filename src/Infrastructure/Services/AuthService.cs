@@ -76,7 +76,7 @@ public class AuthService : IAuthService
         if (!result.Succeeded)
             throw new ArgumentException(string.Join('\n', result.Errors.Select(e => e.Description)));
 
-        TokenResponse accessToken = _tokenService.GenerateAccessToken(user.UserName!, user.Email!);
+        TokenResponse accessToken = _tokenService.GenerateAccessToken(user.Id.ToString(), user.UserName!, user.Email!);
         TokenResponse refreshToken = await _tokenService.GenerateRefreshToken(user.Id);
 
         return new AuthenticationResponse(accessToken, refreshToken);
@@ -91,7 +91,7 @@ public class AuthService : IAuthService
         if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password))
             throw new AuthException("Password or " + (loginRequest.IsEmailIdentifier ? "email" : "username") + " are not valid!");
         
-        TokenResponse accessToken = _tokenService.GenerateAccessToken(user.UserName!, user.Email!);
+        TokenResponse accessToken = _tokenService.GenerateAccessToken(user.Id.ToString(), user.UserName!, user.Email!);
         TokenResponse refreshToken = await _tokenService.GenerateRefreshToken(user.Id);
 
         return new AuthenticationResponse(accessToken, refreshToken);

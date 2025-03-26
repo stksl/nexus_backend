@@ -27,13 +27,14 @@ public class JwtTokenService : ITokenService
         _unitOfWork = unitOfWork;
         _userManager = userManager;
     }
-    public TokenResponse GenerateAccessToken(string username, string email) 
+    public TokenResponse GenerateAccessToken(string id, string username, string email) 
     {
         Claim[] claims = 
         {
-            new Claim(ClaimTypes.NameIdentifier, username),
+            new Claim(ClaimTypes.Name, username),
+            new Claim(ClaimTypes.NameIdentifier, id),
             new Claim(ClaimTypes.Role, AppRoles.User),
-            new Claim(ClaimTypes.Email, email)
+            new Claim(ClaimTypes.Email, email),
         };
 
         SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]!));
@@ -77,7 +78,7 @@ public class JwtTokenService : ITokenService
         if (user == null) 
             throw new AuthException("No user with specified userId exists");
 
-        TokenResponse accessToken = GenerateAccessToken(user.UserName!, user.Email!);
+        TokenResponse accessToken = GenerateAccessToken(user.Id.ToString(), user.UserName!, user.Email!);
 
         existing.Value = Guid.NewGuid().ToString();
 
