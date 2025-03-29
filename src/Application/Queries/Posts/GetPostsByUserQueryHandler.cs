@@ -12,7 +12,7 @@ public class GetPostsByUserQueryHandler : IQueryHandler<GetPostsByUserQuery, IEn
     }
     public async Task<Result<IEnumerable<Post>>> Handle(GetPostsByUserQuery request, CancellationToken cancellationToken)
     {
-        IEnumerable<Post> posts = await _postReadRepository.GetPostsByUser(request.userId);
+        IEnumerable<Post> posts = await _postReadRepository.GetPostsByUser(request.UserId);
 
         return Result.Success(posts);
     }

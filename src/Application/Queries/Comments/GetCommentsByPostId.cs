@@ -3,4 +3,4 @@ using Nexus.Domain.Entities;
 
 namespace Nexus.Application;
 
-public record GetPostsByUserQuery(int UserId) : IQuery<IEnumerable<Post>>;
+public record GetCommentsByPostId(int PostId) : IQuery<IEnumerable<Comment>>;

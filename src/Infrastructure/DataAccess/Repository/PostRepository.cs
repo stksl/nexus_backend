@@ -17,11 +17,6 @@ public class PostRepository : IPostRepository
         return _posts.AddAsync(post).AsTask();
     }
 
-    public Task AddPosts(IEnumerable<Post> posts)
-    {
-        return _posts.AddRangeAsync(posts);
-    }
-
     public async Task RemovePost(int id)
     {
         Post? existing = await _posts.FindAsync(id);
@@ -30,14 +25,8 @@ public class PostRepository : IPostRepository
             _posts.Remove(existing);
     }
 
-    public async Task<bool> UpdatePost(Post updatedPost)
+    public void UpdatePost(Post updatedPost)
     {
-        Post? existing = await _posts.FindAsync(updatedPost.Id);
-
-        if (existing == null)
-            return false;
-        
-        _posts.Update(existing);
-        return true;
+        _posts.Attach(updatedPost).State = EntityState.Modified;
     }
 } 

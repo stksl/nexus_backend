@@ -22,7 +22,6 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(r => r.Expires)
-            .IsRequired()
-            .HasColumnName("expires_date");
+            .IsRequired();
     }
 }

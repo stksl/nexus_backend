@@ -21,7 +21,6 @@ public class PostRespostConfiguration : IEntityTypeConfiguration<PostRepost>
             .HasForeignKey(pr => pr.UserId);
         
         builder.Property(pr => pr.RepostDate)
-            .IsRequired()
-            .HasColumnName("repost_date");
+            .IsRequired();
     }
 }

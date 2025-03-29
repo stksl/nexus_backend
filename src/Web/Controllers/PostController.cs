@@ -23,6 +23,7 @@ public class PostController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreatePost([FromBody]CreatePostRequest createPostRequest) 
     {
         Claim? idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -30,8 +31,8 @@ public class PostController : ControllerBase
         if (idClaim == null)
             return Unauthorized();
 
-        CreatePostCommand createPostCommand = new CreatePostCommand(
-            idClaim.Value, 
+        var createPostCommand = new CreatePostCommand(
+            int.Parse(idClaim.Value), 
             createPostRequest.Content, 
             createPostRequest.Headline);
 
@@ -48,7 +49,7 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPostById([FromQuery]int postId) 
     {
-        GetPostByIdQuery getByIdQuery = new GetPostByIdQuery(postId);
+        var getByIdQuery = new GetPostByIdQuery(postId);
         Result<Post> post = await _mediator.Send(getByIdQuery);
 
         if (!post.Succeed)
@@ -67,7 +68,7 @@ public class PostController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPostsByUser([FromQuery]int userId) 
     {
-        GetPostsByUserQuery getByUserQuery = new GetPostsByUserQuery(userId);
+        var getByUserQuery = new GetPostsByUserQuery(userId);
         
         // todo: add paging
         Result<IEnumerable<Post>> posts = await _mediator.Send(getByUserQuery);

@@ -24,7 +24,7 @@ public class PostReadRepository : IPostReadRepository
 
     public Task<IEnumerable<Post>> GetPostsByUser(int userId)
     {
-        const string sql = "SELECT \"Id\", \"UserId\", Headline, Content, date_created as \"DateCreated\", last_modified as \"LastModified\" FROM \"Posts\" WHERE \"UserId\" = @UserId";
+        const string sql = "SELECT * FROM \"Posts\" WHERE \"UserId\" = @UserId";
 
         return _dbConnection.QueryAsync<Post>(sql, new {UserId = userId});
     }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Nexus.Application;
 using Nexus.Application.Abstractions;
 using Nexus.Application.Auth.Abstractions;
 using Nexus.Infrastructure.DataAccess;
@@ -57,6 +58,8 @@ public static class ServiceCollectionExtension
     {
         return services.AddScoped<IPostRepository, PostRepository>()
             .AddScoped<IPostReadRepository, PostReadRepository>()
+            .AddScoped<ICommentRepository, CommentRepository>()
+            .AddScoped<ICommentReadRepository, CommentReadRepository>()
             .AddScoped<ITokenRepository, TokenRepository>();
     }
     private static IServiceCollection AddUnitOfWork(this IServiceCollection services) 

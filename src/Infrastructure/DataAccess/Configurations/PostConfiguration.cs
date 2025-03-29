@@ -16,21 +16,17 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
 
         builder.Property(p => p.Headline)
             .IsRequired()
-            .HasMaxLength(255)
-            .HasColumnName("headline");
+            .HasMaxLength(255);
 
         builder.Property(p => p.Content)
             .IsRequired()
-            .HasMaxLength(contentLength)
-            .HasColumnName("content");
+            .HasMaxLength(contentLength);
 
         builder.Property(p => p.DateCreated)
-            .IsRequired()
-            .HasColumnName("date_created");
+            .IsRequired();
 
         builder.Property(p => p.LastModified)
-            .IsRequired()
-            .HasColumnName("last_modified");
+            .IsRequired();
         
         builder.HasOne<AppUser>()
             .WithMany()
