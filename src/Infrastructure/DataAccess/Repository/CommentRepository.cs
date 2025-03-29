@@ -16,12 +16,9 @@ public class CommentRepository : ICommentRepository
         return _comments.AddAsync(comment).AsTask();
     }
 
-    public async Task RemoveComment(int id)
+    public void RemoveComment(Comment comment)
     {
-        Comment? comment = await _comments.FindAsync(id);
-
-        if (comment != null)
-            _comments.Remove(comment);
+        _comments.Remove(comment);
     }
 
     public void UpdateComment(Comment updatedComment)
@@ -29,5 +26,4 @@ public class CommentRepository : ICommentRepository
         _comments.Attach(updatedComment).State = EntityState.Modified;
         
     }
-
 }

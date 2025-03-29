@@ -2,4 +2,4 @@ using MediatR;
 
 namespace Nexus.Application.Abstractions;
 
-public interface ICommand<TResult> : IRequest<Result<TResult>> {}
+public interface ICommand<TResult> : IRequest<TResult> {}

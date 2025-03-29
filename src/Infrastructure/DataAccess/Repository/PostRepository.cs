@@ -17,12 +17,9 @@ public class PostRepository : IPostRepository
         return _posts.AddAsync(post).AsTask();
     }
 
-    public async Task RemovePost(int id)
+    public void RemovePost(Post post)
     {
-        Post? existing = await _posts.FindAsync(id);
-
-        if (existing != null)
-            _posts.Remove(existing);
+        _posts.Remove(post);
     }
 
     public void UpdatePost(Post updatedPost)

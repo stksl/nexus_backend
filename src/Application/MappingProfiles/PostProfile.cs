@@ -7,6 +7,8 @@ public class PostProfile : Profile
 {
     public PostProfile()
     {
-        CreateMap<Post, CreatePostCommand>().ReverseMap();
+        CreateMap<CreatePostCommand, Post>();
+
+        CreateMap<UpdatePostCommand, Post>();
     }
 }

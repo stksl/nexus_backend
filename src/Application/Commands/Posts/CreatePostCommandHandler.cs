@@ -16,7 +16,7 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, int>
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
-    public async Task<Result<int>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
         Post post = _mapper.Map<CreatePostCommand, Post>(request);
 
@@ -25,6 +25,6 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, int>
         await _postRepository.AddPost(post);
         await _unitOfWork.SaveChangesAsync();
 
-        return Result.Success(post.Id);
+        return post.Id;
     }
 }

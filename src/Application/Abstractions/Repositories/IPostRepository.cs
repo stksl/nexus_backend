@@ -6,5 +6,5 @@ public interface IPostRepository
 {
     Task AddPost(Post post);
     void UpdatePost(Post updatedPost);
-    Task RemovePost(int id);
+    void RemovePost(Post post);
 }

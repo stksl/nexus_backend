@@ -15,7 +15,7 @@ public class CreateCommentCommandHandler : ICommandHandler<CreateCommentCommand,
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
-    public async Task<Result<int>> Handle(CreateCommentCommand request, CancellationToken token) 
+    public async Task<int> Handle(CreateCommentCommand request, CancellationToken token) 
     {
         Comment comment = _mapper.Map<Comment>(request);
 
@@ -24,6 +24,6 @@ public class CreateCommentCommandHandler : ICommandHandler<CreateCommentCommand,
         await _commentRepository.AddComment(comment);
         await _unitOfWork.SaveChangesAsync();
 
-        return Result.Success(comment.Id);
+        return comment.Id;
     }
 }

@@ -21,7 +21,6 @@ public class CommentController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateComment([FromBody]CreateCommentRequest createCommentRequest) 
     {
         Claim? idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
@@ -36,25 +35,55 @@ public class CommentController : ControllerBase
             createCommentRequest.ParentCommentId
         );
 
-        Result<int> result = await _mediator.Send(createCommentCommand);
+        int commentId = await _mediator.Send(createCommentCommand);
 
-        if (!result.Succeed)
-            return BadRequest();
+        return Ok(commentId);
+    }
+    [HttpPut("update")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> UpdateComment([FromBody]UpdateCommentRequest updateCommentRequest) 
+    {
+        Claim? idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (idClaim == null)
+            return Unauthorized();
         
-        return Ok(result.ResultValue);
+        var updateCommentCommand = new UpdateCommentCommand(
+            int.Parse(idClaim.Value),
+            updateCommentRequest.CommentId,
+            updateCommentRequest.Content
+        );
+
+        bool result = await _mediator.Send(updateCommentCommand);
+
+        return Ok(result);
+    }
+    [HttpDelete("delete")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> DeleteComment([FromQuery]int commentId) 
+    {
+        Claim? idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (idClaim == null)
+            return Unauthorized();
+        
+        var updateCommentCommand = new DeleteCommentCommand(int.Parse(idClaim.Value), commentId);
+
+        bool result = await _mediator.Send(updateCommentCommand);
+
+        return Ok(result);
     }
     [HttpGet("getByPost")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetByPostId([FromQuery]int postId) 
+    public async Task<IActionResult> GetByPostId([FromQuery]int postId, [FromQuery]int? pageNumber) 
     {
-        // todo: add paging
-        var getCommentsByPostQuery = new GetCommentsByPostId(postId);
-        Result<IEnumerable<Comment>> result = await _mediator.Send(getCommentsByPostQuery);
-
-        if (!result.Succeed)
-            return BadRequest();
+        var getCommentsByPostQuery = new GetCommentsByPostId(postId, pageNumber ?? 1);
+        IEnumerable<Comment> comments = await _mediator.Send(getCommentsByPostQuery);
         
-        return Ok(result.ResultValue);
+        return Ok(comments);
     }
 }

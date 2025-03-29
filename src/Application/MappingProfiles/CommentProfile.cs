@@ -7,6 +7,8 @@ public class CommentProfile : Profile
 {
     public CommentProfile()
     {
-        CreateMap<CreateCommentCommand, Comment>().ReverseMap();
+        CreateMap<CreateCommentCommand, Comment>();
+
+        CreateMap<UpdateCommentCommand, Comment>();
     }
 }

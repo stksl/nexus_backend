@@ -1,6 +1,7 @@
 using System.Data;
 using System.Linq.Expressions;
 using Dapper;
+using Nexus.Application;
 using Nexus.Application.Abstractions;
 using Nexus.Domain.Entities;
 
@@ -22,10 +23,18 @@ public class PostReadRepository : IPostReadRepository
         return _dbConnection.QueryFirstOrDefaultAsync<Post>(sql, new {Id = id});
     }
 
-    public Task<IEnumerable<Post>> GetPostsByUser(int userId)
+    public Task<IEnumerable<Post>> GetPostsByUser(int userId, QueryObject queryObject)
     {
-        const string sql = "SELECT * FROM \"Posts\" WHERE \"UserId\" = @UserId";
+        int offset = (queryObject.PageNumber - 1) * queryObject.PageSize;
 
-        return _dbConnection.QueryAsync<Post>(sql, new {UserId = userId});
+        string sql = "SELECT * FROM \"Posts\" WHERE \"UserId\" = @UserId" + 
+        " LIMIT @PageSize OFFSET @Offset";
+
+        return _dbConnection.QueryAsync<Post>(sql, new 
+        {
+            UserId = userId, 
+            PageSize = queryObject.PageSize, 
+            Offset = offset
+        });
     }
 }

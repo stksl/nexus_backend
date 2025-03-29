@@ -13,10 +13,25 @@ public class CommentReadRepository : ICommentReadRepository
         _dbConnection = dbConnection;
     }
 
-    public async Task<IEnumerable<Comment>> GetCommentsByPostId(int postId) 
+    public Task<Comment?> GetCommentById(int id) 
     {
-        const string sql = "SELECT * FROM \"Comments\" WHERE \"PostId\" = @PostId";
+        const string sql = "SELECT * FROM \"Comments\" WHERE \"Id\" = @Id";
 
-        return await _dbConnection.QueryAsync<Comment>(sql, new {PostId = postId});
+        return _dbConnection.QueryFirstOrDefaultAsync<Comment>(sql, new {Id = id});
+    }
+
+    public async Task<IEnumerable<Comment>> GetCommentsByPostId(int postId, QueryObject queryObject) 
+    {
+        int offset = (queryObject.PageNumber - 1) * queryObject.PageSize;
+
+        string sql = "SELECT * FROM \"Comments\" WHERE \"PostId\" = @PostId" + 
+        " LIMIT @PageSize OFFSET @Offset";
+
+        return await _dbConnection.QueryAsync<Comment>(sql, new 
+        {
+            PostId = postId, 
+            PageSize = queryObject.PageSize, 
+            Offset = offset
+        });
     }
 }

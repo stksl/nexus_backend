@@ -4,5 +4,6 @@ namespace Nexus.Application;
 
 public interface ICommentReadRepository 
 {
-    Task<IEnumerable<Comment>> GetCommentsByPostId(int postId);
+    Task<Comment?> GetCommentById(int id);
+    Task<IEnumerable<Comment>> GetCommentsByPostId(int postId, QueryObject queryObject);
 }

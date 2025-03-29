@@ -51,13 +51,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapNexusAuthApis();
-app.Map("/get", async ([FromQuery] int id, [FromServices] IMediator mediator) =>
-{
-    Result result = await mediator.Send(new GetPostByIdQuery(id));
-    if (result.Succeed)
-        System.Console.WriteLine(((Result<Post>)result).ResultValue!.Content);
-
-}).DisableAntiforgery();
 
 app.MapControllers();
 using (var scope = app.Services.CreateScope())

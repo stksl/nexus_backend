@@ -10,10 +10,14 @@ public class GetPostsByUserQueryHandler : IQueryHandler<GetPostsByUserQuery, IEn
     {
         _postReadRepository = postReadRepository;
     }
-    public async Task<Result<IEnumerable<Post>>> Handle(GetPostsByUserQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Post>> Handle(GetPostsByUserQuery request, CancellationToken cancellationToken)
     {
-        IEnumerable<Post> posts = await _postReadRepository.GetPostsByUser(request.UserId);
+        QueryObject queryObject = new QueryObject() 
+        {
+            PageNumber = request.PageNumber,
+        };
+        IEnumerable<Post> posts = await _postReadRepository.GetPostsByUser(request.UserId, queryObject);
 
-        return Result.Success(posts);
+        return posts;
     }
 }

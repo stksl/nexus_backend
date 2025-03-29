@@ -10,10 +10,14 @@ public class GetCommentsByPostIdHandler : IQueryHandler<GetCommentsByPostId, IEn
     {
         _commentReadRepository = commentReadRepository;
     }
-    public async Task<Result<IEnumerable<Comment>>> Handle(GetCommentsByPostId request, CancellationToken token) 
+    public async Task<IEnumerable<Comment>> Handle(GetCommentsByPostId request, CancellationToken token) 
     {
-        IEnumerable<Comment> comments = await _commentReadRepository.GetCommentsByPostId(request.PostId);
+        QueryObject queryObject = new QueryObject() 
+        {
+            PageNumber = request.PageNumber,
+        };
+        IEnumerable<Comment> comments = await _commentReadRepository.GetCommentsByPostId(request.PostId, queryObject);
 
-        return Result.Success(comments);
+        return comments;
     }
 }
