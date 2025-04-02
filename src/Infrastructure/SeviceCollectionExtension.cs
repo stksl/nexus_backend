@@ -58,8 +58,15 @@ public static class ServiceCollectionExtension
     {
         return services.AddScoped<IPostRepository, PostRepository>()
             .AddScoped<IPostReadRepository, PostReadRepository>()
+
             .AddScoped<ICommentRepository, CommentRepository>()
             .AddScoped<ICommentReadRepository, CommentReadRepository>()
+
+            .AddScoped<ITagRepository, TagRepository>()
+            .AddScoped<ITagReadRepository, TagReadRepository>()
+
+            .AddScoped<IPostTagRepositoryHelper, PostTagRepositoryHelper>()
+            
             .AddScoped<ITokenRepository, TokenRepository>();
     }
     private static IServiceCollection AddUnitOfWork(this IServiceCollection services) 

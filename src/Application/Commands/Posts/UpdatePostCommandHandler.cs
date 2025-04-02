@@ -8,12 +8,18 @@ public class UpdatePostCommandHandler : ICommandHandler<UpdatePostCommand, bool>
 {
     private readonly IPostRepository _postRepository;
     private readonly IPostReadRepository _postReadRepository;
+    private readonly IPostTagRepositoryHelper _postTagRepositoryHelper;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
-    public UpdatePostCommandHandler(IPostRepository postRepository, IPostReadRepository postReadRepository, IUnitOfWork unitOfWork, IMapper mapper)
+    public UpdatePostCommandHandler(IPostRepository postRepository, 
+        IPostReadRepository postReadRepository, 
+        IPostTagRepositoryHelper postTagRepositoryHelper, 
+        IUnitOfWork unitOfWork, 
+        IMapper mapper)
     {
         _postRepository = postRepository;
         _postReadRepository = postReadRepository;
+        _postTagRepositoryHelper = postTagRepositoryHelper;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -25,7 +31,9 @@ public class UpdatePostCommandHandler : ICommandHandler<UpdatePostCommand, bool>
             throw new KeyNotFoundException();
         
         if (post.UserId != request.UserId)
-            throw new AuthException("Only owners can update their comments!");
+            throw new AuthException("Only owners can update their posts!");
+
+        await _postTagRepositoryHelper.AttachTags(post, request.Tags);
 
         _mapper.Map(request, post);
 

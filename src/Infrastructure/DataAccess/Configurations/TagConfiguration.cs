@@ -11,7 +11,7 @@ public class TagConfiguration : IEntityTypeConfiguration<Tag>
         builder.ToTable("Tags");
 
         builder.HasKey(t => t.Id);
-
-        builder.Property(t => t.Name).IsRequired();
+        
+        builder.HasIndex(t => t.Name).IsUnique();
     }
 }

@@ -24,7 +24,7 @@ public class DeletePostCommandHandler : ICommandHandler<DeletePostCommand, bool>
             throw new KeyNotFoundException();
         
         if (post.UserId != request.UserId)
-            throw new AuthException("Only owners can delete their comments!");
+            throw new AuthException("Only owners can delete their posts!");
         
         _postRepository.RemovePost(post);
 

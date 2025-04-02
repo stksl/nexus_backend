@@ -33,7 +33,8 @@ public class PostController : ControllerBase
         var createPostCommand = new CreatePostCommand(
             int.Parse(idClaim.Value), 
             createPostRequest.Content, 
-            createPostRequest.Headline);
+            createPostRequest.Headline,
+            createPostRequest.Tags);
 
         int postId = await _mediator.Send(createPostCommand);
         
@@ -54,7 +55,8 @@ public class PostController : ControllerBase
             updatePostRequest.PostId,
             int.Parse(idClaim.Value),
             updatePostRequest.Content,
-            updatePostRequest.Headline
+            updatePostRequest.Headline,
+            updatePostRequest.Tags
         );
 
         bool result = await _mediator.Send(updatePostCommand);

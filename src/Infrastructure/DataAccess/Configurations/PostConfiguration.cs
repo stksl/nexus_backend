@@ -10,7 +10,7 @@ public class PostConfiguration : IEntityTypeConfiguration<Post>
     {
         builder.ToTable("Posts");
 
-        const int contentLength = 0b1 << 14; // 16kb
+        const int contentLength = 0b1 << 14; // 16k characters
 
         builder.HasKey(p => p.Id);
 
