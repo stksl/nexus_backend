@@ -65,8 +65,12 @@ public static class ServiceCollectionExtension
             .AddScoped<ITagRepository, TagRepository>()
             .AddScoped<ITagReadRepository, TagReadRepository>()
 
-            .AddScoped<IPostTagRepositoryHelper, PostTagRepositoryHelper>()
+            .AddScoped<IPostTagRepository, PostTagRepository>()
             
+            .AddScoped<IPostLikeRepository, PostLikeRepository>()
+            
+            .AddScoped<ICommentLikeRepository, CommentLikeRepository>()
+
             .AddScoped<ITokenRepository, TokenRepository>();
     }
     private static IServiceCollection AddUnitOfWork(this IServiceCollection services) 

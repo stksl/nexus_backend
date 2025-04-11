@@ -104,7 +104,7 @@ public class CommentRepositoryTest
         .ReturnsAsync(expected);
 
         CommentReadRepository commentReadRepository = new CommentReadRepository(dbConnectionMock.Object);
-        Comment? actual = await commentReadRepository.GetCommentById(1);
+        Comment? actual = await commentReadRepository.GetCommentWithLikesById(1);
 
         Assert.Equal(expected: expected.Content, actual: actual?.Content);
     }
@@ -129,7 +129,7 @@ public class CommentRepositoryTest
 
         CommentReadRepository commentReadRepository = new CommentReadRepository(dbConnectionMock.Object);
 
-        IEnumerable<Comment> actual = await commentReadRepository.GetCommentsByPostId(1, new QueryObject());
+        IEnumerable<Comment> actual = await commentReadRepository.GetCommentsWithLikesByPostId(1, new QueryObject());
 
         Assert.Equal(expected, actual, EqualityComparer<Comment>.Create((left, right) => left?.Content == right?.Content));
     }

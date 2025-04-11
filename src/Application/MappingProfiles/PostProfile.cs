@@ -1,4 +1,5 @@
 using AutoMapper;
+using Nexus.Application.Dtos;
 using Nexus.Domain.Entities;
 
 namespace Nexus.Application;

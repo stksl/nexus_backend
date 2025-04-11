@@ -10,7 +10,7 @@ public class PostRespostConfiguration : IEntityTypeConfiguration<PostRepost>
     {
         builder.ToTable("PostReposts");
 
-        builder.HasKey(pr => pr.Id);
+        builder.HasKey(pr => new { pr.UserId, pr.PostId });
 
         builder.HasOne<Post>()
             .WithMany()

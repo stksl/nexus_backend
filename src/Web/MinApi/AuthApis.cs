@@ -70,18 +70,18 @@ public static class AuthApis
             return Results.Ok();
         });
         
-        authApi.MapGet("/logout", (HttpContext context) => 
+        authApi.MapGet("/logout", async ([FromServices]IAuthService authService, HttpContext context) => 
         {
+            if (context.Request.Cookies["RefreshToken"] == null || !await authService.Logout(context.Request.Cookies["RefreshToken"]!)) 
+            {
+                return Results.BadRequest();
+            }
+
             context.Response.Cookies.Delete("AccessToken");
             context.Response.Cookies.Delete("RefreshToken");
 
-            return Task.CompletedTask;
+            return Results.Ok();
         });
-
-        authApi.MapGet("/test",  [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]async (HttpContext context, ClaimsPrincipal user) => 
-        {
-            await context.Response.WriteAsync("asdasdasdasd");
-        }).WithDescription("test desciption");
     }
 
     private static void AddAccessTokenCookie(HttpContext context, TokenResponse accessToken)

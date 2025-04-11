@@ -104,7 +104,7 @@ public class PostRepositoryTest
         .ReturnsAsync(expected);
 
         PostReadRepository postReadRepository = new PostReadRepository(dbConnectionMock.Object);
-        Post? actual = await postReadRepository.GetPostById(1);
+        Post? actual = await postReadRepository.GetPostWithLikesById(1);
 
         Assert.Equal(expected: expected.Headline, actual: actual?.Headline);
     }
@@ -129,7 +129,7 @@ public class PostRepositoryTest
 
         PostReadRepository postReadRepository = new PostReadRepository(dbConnectionMock.Object);
 
-        IEnumerable<Post> actual = await postReadRepository.GetPostsByUser(1, new QueryObject());
+        IEnumerable<Post> actual = await postReadRepository.GetPostsWithLikesByUser(1, new QueryObject());
 
         Assert.Equal(expected, actual, EqualityComparer<Post>.Create((left, right) => left?.Headline == right?.Headline));
     }

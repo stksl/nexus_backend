@@ -1,7 +1,7 @@
 using System.Data;
 using Dapper;
 using Nexus.Application;
-using Nexus.Domain.Entities;
+using Nexus.Application.Dtos;
 
 namespace Nexus.Infrastructure.DataAccess;
 
@@ -13,21 +13,41 @@ public class CommentReadRepository : ICommentReadRepository
         _dbConnection = dbConnection;
     }
 
-    public Task<Comment?> GetCommentById(int id) 
+    public async Task<CommentResponse?> GetCommentWithLikesById(int id) 
     {
-        const string sql = "SELECT * FROM \"Comments\" WHERE \"Id\" = @Id";
+        const string sql = 
+            "SELECT \"Id\", c.\"UserId\", \"PostId\", \"Content\", \"DateCreated\", \"LastModified\", \"ParentCommentId\", COUNT(\"CommentId\") AS \"LikeCount\" " +
+            "FROM \"Comments\" AS c " +
+            "LEFT JOIN \"CommentLikes\" AS cl  " +
+            "ON cl.\"CommentId\" = c.\"Id\" " +
+            "WHERE \"Id\" = @Id " +
+            "GROUP BY \"Id\"" ;
 
-        return _dbConnection.QueryFirstOrDefaultAsync<Comment>(sql, new {Id = id});
+        CommentResponse? comment = await _dbConnection.QueryFirstOrDefaultAsync<CommentResponse>(sql, new {Id = id});
+
+        return comment;
     }
 
-    public async Task<IEnumerable<Comment>> GetCommentsByPostId(int postId, QueryObject queryObject) 
+    public async Task<IEnumerable<CommentResponse>> GetCommentsWithLikesByPostId(int postId, QueryObject queryObject) 
     {
         int offset = (queryObject.PageNumber - 1) * queryObject.PageSize;
 
-        string sql = "SELECT * FROM \"Comments\" WHERE \"PostId\" = @PostId" + 
-        " LIMIT @PageSize OFFSET @Offset";
+        const string sql = "SELECT " +
+            "\"Id\", " +  
+            "c.\"UserId\", " +  
+            "\"PostId\", " + 
+            "\"Content\", " + 
+            "\"DateCreated\", " + 
+            "\"LastModified\", " + 
+            "\"ParentCommentId\", " + 
+            "COUNT(\"CommentId\") AS \"LikeCount\" " +
+            "FROM \"Comments\" AS c " +
+            "LEFT JOIN \"CommentLikes\" AS cl ON cl.\"CommentId\" = c.\"Id\" " +
+            "WHERE c.\"PostId\" = @PostId " +
+            "GROUP BY \"Id\" " + 
+            "LIMIT @PageSize OFFSET @Offset";
 
-        return await _dbConnection.QueryAsync<Comment>(sql, new 
+        return await _dbConnection.QueryAsync<CommentResponse>(sql, new 
         {
             PostId = postId, 
             PageSize = queryObject.PageSize, 

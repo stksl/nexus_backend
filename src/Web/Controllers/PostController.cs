@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Application;
-using Nexus.Domain.Entities;
+using Nexus.Application.Dtos;
 using Nexus.WebApi.Dtos;
 
 namespace Nexus.WebApi;
@@ -44,7 +44,7 @@ public class PostController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> UpdatePost([FromBody]UpdatePostRequest updatePostRequest) 
+    public async Task<IActionResult> UpdatePost([FromQuery]int postId, [FromBody]UpdatePostRequest updatePostRequest) 
     {
         Claim? idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -52,7 +52,7 @@ public class PostController : ControllerBase
             return Unauthorized();
 
         UpdatePostCommand updatePostCommand = new UpdatePostCommand(
-            updatePostRequest.PostId,
+            postId,
             int.Parse(idClaim.Value),
             updatePostRequest.Content,
             updatePostRequest.Headline,
@@ -87,7 +87,7 @@ public class PostController : ControllerBase
     public async Task<IActionResult> GetPostById([FromQuery]int postId) 
     {
         var getByIdQuery = new GetPostByIdQuery(postId);
-        Post? post = await _mediator.Send(getByIdQuery);
+        PostResponse? post = await _mediator.Send(getByIdQuery);
         
         if (post == null)
             return NotFound();
@@ -102,7 +102,7 @@ public class PostController : ControllerBase
     {
         var getByUserQuery = new GetPostsByUserQuery(userId, pageNumber ?? 1);
         
-        IEnumerable<Post> posts = await _mediator.Send(getByUserQuery);
+        IEnumerable<PostResponse> posts = await _mediator.Send(getByUserQuery);
         
         return Ok(posts);
     }

@@ -1,9 +1,9 @@
-using Nexus.Domain.Entities;
+using Nexus.Application.Dtos;
 
 namespace Nexus.Application;
 
 public interface ICommentReadRepository 
 {
-    Task<Comment?> GetCommentById(int id);
-    Task<IEnumerable<Comment>> GetCommentsByPostId(int postId, QueryObject queryObject);
+    Task<CommentResponse?> GetCommentWithLikesById(int id);
+    Task<IEnumerable<CommentResponse>> GetCommentsWithLikesByPostId(int postId, QueryObject queryObject);
 }

@@ -10,7 +10,7 @@ public class PostLikeConfiguration : IEntityTypeConfiguration<PostLike>
     {
         builder.ToTable("PostLikes");
         
-        builder.HasKey(pl => pl.Id);
+        builder.HasKey(pl => new { pl.UserId, pl.PostId });
 
         builder.HasOne<Post>()
             .WithMany()

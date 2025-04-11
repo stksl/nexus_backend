@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Application;
-using Nexus.Domain.Entities;
+using Nexus.Application.Dtos;
 
 namespace Nexus.WebApi;
 [ApiController]
@@ -43,7 +43,7 @@ public class CommentController : ControllerBase
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> UpdateComment([FromBody]UpdateCommentRequest updateCommentRequest) 
+    public async Task<IActionResult> UpdateComment([FromQuery]int commentId, [FromBody]UpdateCommentRequest updateCommentRequest) 
     {
         Claim? idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -52,7 +52,7 @@ public class CommentController : ControllerBase
         
         var updateCommentCommand = new UpdateCommentCommand(
             int.Parse(idClaim.Value),
-            updateCommentRequest.CommentId,
+            commentId,
             updateCommentRequest.Content
         );
 
@@ -78,11 +78,12 @@ public class CommentController : ControllerBase
         return Ok(result);
     }
     [HttpGet("getByPost")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetByPostId([FromQuery]int postId, [FromQuery]int? pageNumber) 
     {
         var getCommentsByPostQuery = new GetCommentsByPostId(postId, pageNumber ?? 1);
-        IEnumerable<Comment> comments = await _mediator.Send(getCommentsByPostQuery);
+        IEnumerable<CommentResponse> comments = await _mediator.Send(getCommentsByPostQuery);
         
         return Ok(comments);
     }

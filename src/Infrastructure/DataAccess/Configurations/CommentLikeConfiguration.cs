@@ -10,7 +10,7 @@ public class CommentLikeConfiguration : IEntityTypeConfiguration<CommentLike>
     {
         builder.ToTable("CommentLikes");
 
-        builder.HasKey(cl => cl.Id);
+        builder.HasKey(cl => new { cl.UserId, cl.CommentId });
 
         builder.HasOne<Comment>()
             .WithMany()

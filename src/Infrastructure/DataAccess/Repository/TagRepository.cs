@@ -15,7 +15,10 @@ public class TagRepository : ITagRepository
     {
         return _tags.AddAsync(tag).AsTask();
     }
-
+    public Task AddTags(IEnumerable<Tag> tags) 
+    {
+        return _tags.AddRangeAsync(tags);
+    }
     public void RemoveTag(Tag tag)
     {
         _tags.Remove(tag);

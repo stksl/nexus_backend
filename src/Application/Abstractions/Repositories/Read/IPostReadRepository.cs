@@ -1,10 +1,9 @@
-using System.Linq.Expressions;
-using Nexus.Domain.Entities;
+using Nexus.Application.Dtos;
 
 namespace Nexus.Application.Abstractions;
 
 public interface IPostReadRepository 
 {
-    Task<Post?> GetPostById(int id);
-    Task<IEnumerable<Post>> GetPostsByUser(int userId, QueryObject queryObject);
+    Task<PostResponse?> GetPostWithLikesById(int id);
+    Task<IEnumerable<PostResponse>> GetPostsWithLikesByUser(int userId, QueryObject queryObject);
 }

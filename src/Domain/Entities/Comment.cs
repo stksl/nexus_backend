@@ -2,7 +2,7 @@ using Nexus.SharedKernel;
 
 namespace Nexus.Domain.Entities;
 
-public class Comment : IEntity
+public class Comment
 {
     public int Id {get; set;}
     public int PostId {get; set;}
