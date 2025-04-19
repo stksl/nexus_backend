@@ -5,5 +5,5 @@ namespace Nexus.Application.Abstractions;
 public interface IPostReadRepository 
 {
     Task<PostResponse?> GetPostWithLikesById(int id);
-    Task<IEnumerable<PostResponse>> GetPostsWithLikesByUser(int userId, QueryObject queryObject);
+    Task<IEnumerable<PostResponse>> GetPostsWithLikesByUser(int userId, QueryObject<PostResponse> queryObject);
 }

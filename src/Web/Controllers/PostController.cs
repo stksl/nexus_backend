@@ -98,9 +98,9 @@ public class PostController : ControllerBase
     [HttpGet("getByUser")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetPostsByUser([FromQuery]int userId, [FromQuery]int? pageNumber) 
+    public async Task<IActionResult> GetPostsByUser([FromQuery]int userId, [FromQuery]QueryObjectRequest queryObjectRequest) 
     {
-        var getByUserQuery = new GetPostsByUserQuery(userId, pageNumber ?? 1);
+        var getByUserQuery = new GetPostsByUserQuery(userId, queryObjectRequest.PageNumber ?? 1, queryObjectRequest.SortBy);
         
         IEnumerable<PostResponse> posts = await _mediator.Send(getByUserQuery);
         

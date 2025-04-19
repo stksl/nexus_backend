@@ -1,4 +1,5 @@
 using System.Data;
+using System.Linq.Expressions;
 using Dapper;
 using Nexus.Application;
 using Nexus.Application.Dtos;
@@ -28,11 +29,11 @@ public class CommentReadRepository : ICommentReadRepository
         return comment;
     }
 
-    public async Task<IEnumerable<CommentResponse>> GetCommentsWithLikesByPostId(int postId, QueryObject queryObject) 
+    public async Task<IEnumerable<CommentResponse>> GetCommentsWithLikesByPostId(int postId, QueryObject<CommentResponse> queryObject) 
     {
         int offset = (queryObject.PageNumber - 1) * queryObject.PageSize;
 
-        const string sql = "SELECT " +
+        string sql = "SELECT " +
             "\"Id\", " +  
             "c.\"UserId\", " +  
             "\"PostId\", " + 
@@ -44,8 +45,14 @@ public class CommentReadRepository : ICommentReadRepository
             "FROM \"Comments\" AS c " +
             "LEFT JOIN \"CommentLikes\" AS cl ON cl.\"CommentId\" = c.\"Id\" " +
             "WHERE c.\"PostId\" = @PostId " +
-            "GROUP BY \"Id\" " + 
-            "LIMIT @PageSize OFFSET @Offset";
+            "GROUP BY \"Id\" ";
+
+        if (queryObject.SortBy?.Body is MemberExpression m) 
+        {
+            sql += $" ORDER BY \"{m.Member.Name}\" " + (queryObject.SortByAscending ? "ASC" : "DESC");
+        }
+
+        sql += " LIMIT @PageSize OFFSET @Offset";
 
         return await _dbConnection.QueryAsync<CommentResponse>(sql, new 
         {

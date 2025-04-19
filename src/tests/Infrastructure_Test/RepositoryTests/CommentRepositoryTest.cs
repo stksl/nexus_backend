@@ -6,6 +6,7 @@ using Moq.Dapper;
 using Nexus.Domain.Entities;
 using Nexus.Application;
 using Nexus.Infrastructure.DataAccess;
+using Nexus.Application.Dtos;
 
 namespace Nexus.Tests;
 
@@ -94,17 +95,18 @@ public class CommentRepositoryTest
     [Fact]
     public async Task GetCommentById_Test() 
     {
-        Comment expected = new Comment() 
+        CommentResponse expected = new CommentResponse() 
         {
             Content = "some comment content",
+            LikesCount = 1
         };
 
         dbConnectionMock.SetupDapperAsync(dbConnection => 
-            dbConnection.QueryFirstOrDefaultAsync<Comment>(It.IsAny<string>(), null, null, null, null))
+            dbConnection.QueryFirstOrDefaultAsync<CommentResponse>(It.IsAny<string>(), null, null, null, null))
         .ReturnsAsync(expected);
 
         CommentReadRepository commentReadRepository = new CommentReadRepository(dbConnectionMock.Object);
-        Comment? actual = await commentReadRepository.GetCommentWithLikesById(1);
+        CommentResponse? actual = await commentReadRepository.GetCommentWithLikesById(1);
 
         Assert.Equal(expected: expected.Content, actual: actual?.Content);
     }
@@ -112,25 +114,25 @@ public class CommentRepositoryTest
     [Fact]
     public async Task GetCommentsByPostId_Test() 
     {
-        IEnumerable<Comment> expected = [
-            new Comment() 
+        IEnumerable<CommentResponse> expected = [
+            new CommentResponse() 
             {
                 Content = "content 1",
             },
-            new Comment() 
+            new CommentResponse() 
             {
                 Content = "content 2"
             }
         ];
 
         dbConnectionMock.SetupDapperAsync(dbConnection => 
-            dbConnection.QueryAsync<Comment>(It.IsAny<string>(), null, null, null, null))
+            dbConnection.QueryAsync<CommentResponse>(It.IsAny<string>(), null, null, null, null))
         .ReturnsAsync(expected);
 
         CommentReadRepository commentReadRepository = new CommentReadRepository(dbConnectionMock.Object);
 
-        IEnumerable<Comment> actual = await commentReadRepository.GetCommentsWithLikesByPostId(1, new QueryObject());
+        IEnumerable<CommentResponse> actual = await commentReadRepository.GetCommentsWithLikesByPostId(1, new QueryObject<CommentResponse>());
 
-        Assert.Equal(expected, actual, EqualityComparer<Comment>.Create((left, right) => left?.Content == right?.Content));
+        Assert.Equal(expected, actual, EqualityComparer<CommentResponse>.Create((left, right) => left?.Content == right?.Content));
     }
 }

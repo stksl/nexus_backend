@@ -42,7 +42,7 @@ public static class ServiceCollectionExtension
             o.Password.RequireUppercase = false;
 
             o.User.RequireUniqueEmail = true;
-
+            
             o.SignIn.RequireConfirmedEmail = true;
             
         }).AddEntityFrameworkStores<NexusDbContext>()

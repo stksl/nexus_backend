@@ -1,4 +1,6 @@
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -18,7 +20,12 @@ public static class ServiceCollectionExtension
     private static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration config) 
     {
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options => 
+        .AddGoogle(GoogleDefaults.AuthenticationScheme, options => 
+        {
+            options.ClientId = config["Google:ClientId"]!;
+            options.ClientSecret = config["Google:ClientSecret"]!;
+        })
+        .AddJwtBearer(options => 
         {
             options.Events = new JwtBearerEvents() 
             {

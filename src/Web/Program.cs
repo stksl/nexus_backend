@@ -34,7 +34,6 @@ builder.Services.AddSwaggerGen(config =>
 /*     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     config.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename)); */
 });
-
 builder.Services.AddWebApiDependencies(builder.Configuration);
 builder.Services.AddApplicationDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
@@ -45,12 +44,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseHttpsRedirection();
-
+/* app.UseHttpsRedirection();
+ */
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapNexusAuthApis();
+app.MapNexusOAuthApis();
 
 app.MapControllers();
 using (var scope = app.Services.CreateScope())

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Nexus.Application;
 using Nexus.Application.Dtos;
+using Nexus.WebApi.Dtos;
 
 namespace Nexus.WebApi;
 [ApiController]
@@ -80,9 +81,9 @@ public class CommentController : ControllerBase
     [HttpGet("getByPost")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetByPostId([FromQuery]int postId, [FromQuery]int? pageNumber) 
+    public async Task<IActionResult> GetByPostId([FromQuery]int postId, [FromQuery]QueryObjectRequest queryObjectRequest) 
     {
-        var getCommentsByPostQuery = new GetCommentsByPostId(postId, pageNumber ?? 1);
+        var getCommentsByPostQuery = new GetCommentsByPostIdQuery(postId, queryObjectRequest.PageNumber ?? 1, queryObjectRequest.SortBy);
         IEnumerable<CommentResponse> comments = await _mediator.Send(getCommentsByPostQuery);
         
         return Ok(comments);

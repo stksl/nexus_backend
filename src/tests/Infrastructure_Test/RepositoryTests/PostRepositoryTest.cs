@@ -6,6 +6,7 @@ using Moq.Dapper;
 using Nexus.Domain.Entities;
 using Nexus.Application;
 using Nexus.Infrastructure.DataAccess;
+using Nexus.Application.Dtos;
 
 namespace Nexus.Tests;
 
@@ -94,17 +95,19 @@ public class PostRepositoryTest
     [Fact]
     public async Task GetPostById_Test() 
     {
-        Post expected = new Post() 
+        PostResponse expected = new PostResponse() 
         {
             Headline = "some other headline",
+            LikeCount = 23,
+            Tags = ["discussion", "js"]
         };
 
         dbConnectionMock.SetupDapperAsync(dbConnection => 
-            dbConnection.QueryFirstOrDefaultAsync<Post>(It.IsAny<string>(), null, null, null, null))
+            dbConnection.QueryFirstOrDefaultAsync<PostResponse>(It.IsAny<string>(), null, null, null, null))
         .ReturnsAsync(expected);
 
         PostReadRepository postReadRepository = new PostReadRepository(dbConnectionMock.Object);
-        Post? actual = await postReadRepository.GetPostWithLikesById(1);
+        PostResponse? actual = await postReadRepository.GetPostWithLikesById(1);
 
         Assert.Equal(expected: expected.Headline, actual: actual?.Headline);
     }
@@ -112,25 +115,29 @@ public class PostRepositoryTest
     [Fact]
     public async Task GetPostByUser_Test() 
     {
-        IEnumerable<Post> expected = [
-            new Post() 
+        IEnumerable<PostResponse> expected = [
+            new PostResponse() 
             {
                 Headline = "headline 1",
+                LikeCount = 20,
+                Tags = ["js", ".net"]
             },
-            new Post() 
+            new PostResponse() 
             {
-                Headline = "headline 2"
+                Headline = "headline 2",
+                LikeCount = 15,
+                Tags = ["tag1", "tag2", "tag3"]
             }
         ];
 
         dbConnectionMock.SetupDapperAsync(dbConnection => 
-            dbConnection.QueryAsync<Post>(It.IsAny<string>(), null, null, null, null))
+            dbConnection.QueryAsync<PostResponse>(It.IsAny<string>(), null, null, null, null))
         .ReturnsAsync(expected);
 
         PostReadRepository postReadRepository = new PostReadRepository(dbConnectionMock.Object);
 
-        IEnumerable<Post> actual = await postReadRepository.GetPostsWithLikesByUser(1, new QueryObject());
+        IEnumerable<PostResponse> actual = await postReadRepository.GetPostsWithLikesByUser(1, new QueryObject<PostResponse>());
 
-        Assert.Equal(expected, actual, EqualityComparer<Post>.Create((left, right) => left?.Headline == right?.Headline));
+        Assert.Equal(expected, actual, EqualityComparer<PostResponse>.Create((left, right) => left?.Headline == right?.Headline));
     }
 }

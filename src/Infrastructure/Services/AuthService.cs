@@ -8,6 +8,7 @@ using Nexus.Application.Auth.Abstractions;
 using Nexus.Application.Abstractions;
 using Nexus.Application.Auth.Dtos;
 using Nexus.Infrastructure.DataAccess;
+using System.Net.Mail;
 
 namespace Nexus.Infrastructure;
 
@@ -93,6 +94,34 @@ public class AuthService : IAuthService
         
         TokenResponse accessToken = _tokenService.GenerateAccessToken(user.Id.ToString(), user.UserName!, user.Email!);
         TokenResponse refreshToken = await _tokenService.GenerateRefreshToken(user.Id);
+
+        return new AuthenticationResponse(accessToken, refreshToken);
+    }
+    public async Task<AuthenticationResponse> LoginGoogle(MailAddress email) 
+    {
+        AppUser? existing = await _userManager.FindByEmailAsync(email.Address);
+        if (existing == null) 
+        {
+            existing = new AppUser() 
+            {
+                Email = email.Address,
+                UserName = "user_rnd" + Random.Shared.Next()
+            };
+            var result = await _userManager.CreateAsync(existing);
+            if (!result.Succeeded)
+                throw new AuthException(string.Join('\n', result.Errors.Select(e => e.Description)));
+
+            result = await _userManager.AddToRoleAsync(existing, AppRoles.User);
+            if (!result.Succeeded)
+                throw new AuthException(string.Join('\n', result.Errors.Select(e => e.Description)));
+
+            result = await _userManager.ConfirmEmailAsync(existing, await _userManager.GenerateEmailConfirmationTokenAsync(existing));
+            if (!result.Succeeded)
+                throw new AuthException(string.Join('\n', result.Errors.Select(e => e.Description)));
+
+        }
+        TokenResponse accessToken = _tokenService.GenerateAccessToken(existing.Id.ToString(), existing.UserName!, existing.Email!);
+        TokenResponse refreshToken = await _tokenService.GenerateRefreshToken(existing.Id);
 
         return new AuthenticationResponse(accessToken, refreshToken);
     }

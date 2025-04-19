@@ -9,11 +9,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Infrastructure.Migrations
+namespace Nexus.Infrastructure.Migrations
 {
     [DbContext(typeof(NexusDbContext))]
-    [Migration("20250327163701_added recursive comment tree field")]
-    partial class addedrecursivecommenttreefield
+    [Migration("20250419095326_upd")]
+    partial class upd
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -166,8 +166,7 @@ namespace Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Expires")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_date");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -198,14 +197,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("character varying(4096)");
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_created");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ParentCommentId")
+                    b.Property<int?>("ParentCommentId")
                         .HasColumnType("integer");
 
                     b.Property<int>("PostId")
@@ -227,23 +224,15 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Nexus.Domain.Entities.CommentLike", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CommentId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "CommentId");
 
                     b.HasIndex("CommentId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("CommentLikes", (string)null);
                 });
@@ -259,22 +248,18 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(16384)
-                        .HasColumnType("character varying(16384)")
-                        .HasColumnName("content");
+                        .HasColumnType("character varying(16384)");
 
                     b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_created");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Headline")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("headline");
+                        .HasColumnType("character varying(255)");
 
                     b.Property<DateTime>("LastModified")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_modified");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -288,50 +273,33 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Nexus.Domain.Entities.PostLike", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("PostId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "PostId");
 
                     b.HasIndex("PostId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("PostLikes", (string)null);
                 });
 
             modelBuilder.Entity("Nexus.Domain.Entities.PostRepost", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("PostId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("RepostDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("repost_date");
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "PostId");
 
                     b.HasIndex("PostId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("PostReposts", (string)null);
                 });
@@ -364,6 +332,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Tags", (string)null);
                 });
@@ -499,9 +470,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Nexus.Domain.Entities.Comment", null)
                         .WithMany()
-                        .HasForeignKey("ParentCommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParentCommentId");
 
                     b.HasOne("Nexus.Domain.Entities.Post", null)
                         .WithMany()

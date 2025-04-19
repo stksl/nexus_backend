@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Mail;
-using System.Transactions;
 using Microsoft.Extensions.Configuration;
 using Nexus.Application.Abstractions;
 

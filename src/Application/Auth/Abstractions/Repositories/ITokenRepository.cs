@@ -1,4 +1,3 @@
-using Nexus.Application.Auth.Dtos;
 
 namespace Nexus.Application.Auth.Abstractions;
 

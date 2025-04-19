@@ -1,4 +1,5 @@
 using System.Data;
+using System.Linq.Expressions;
 using Dapper;
 using Nexus.Application;
 using Nexus.Application.Abstractions;
@@ -35,11 +36,11 @@ public class PostReadRepository : IPostReadRepository
         return _dbConnection.QueryFirstOrDefaultAsync<PostResponse>(sql, new { Id = id });
     }
 
-    public Task<IEnumerable<PostResponse>> GetPostsWithLikesByUser(int userId, QueryObject queryObject)
+    public Task<IEnumerable<PostResponse>> GetPostsWithLikesByUser(int userId, QueryObject<PostResponse> queryObject)
     {
         int offset = (queryObject.PageNumber - 1) * queryObject.PageSize;
 
-        const string sql = "SELECT " +
+        string sql = "SELECT " +
             "p.\"Id\", " +
             "p.\"UserId\", " +
             "p.\"Headline\", " +
@@ -53,8 +54,13 @@ public class PostReadRepository : IPostReadRepository
             "LEFT JOIN \"PostTags\" pt ON pt.\"PostId\" = p.\"Id\" " +
             "LEFT JOIN \"Tags\" t ON pt.\"TagId\" = t.\"Id\" " +
             "WHERE p.\"UserId\" = @UserId " +
-            "GROUP BY p.\"Id\" " +
-            "LIMIT @PageSize OFFSET @Offset";
+            "GROUP BY p.\"Id\" ";
+            
+        if (queryObject.SortBy?.Body is MemberExpression m) 
+        {
+            sql += $" ORDER BY \"{m.Member.Name}\" " + (queryObject.SortByAscending ? "ASC" : "DESC");
+        } 
+        sql += " LIMIT @PageSize OFFSET @Offset ";
 
         return _dbConnection.QueryAsync<PostResponse>(sql, new
         {

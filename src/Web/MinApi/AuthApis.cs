@@ -4,12 +4,9 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using Nexus.Application.Auth.Abstractions;
 using Nexus.Application.Auth.Dtos;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Security.Claims;
 namespace Nexus.WebApi;
 
-public static class AuthApis
+public static partial class AuthApis
 {
     public static void MapNexusAuthApis(this WebApplication app)
     {
@@ -52,8 +49,11 @@ public static class AuthApis
                 Results.BadRequest(result.Errors);
 
             var response = await authService.Login(loginRequest);
+
             AddAccessTokenCookie(context, response.AccessToken);
             AddRefreshTokenCookie(context, response.RefreshToken);
+
+            return Results.Ok();
         });
 
         authApi.MapGet("/refresh", async (HttpContext context, [FromServices]ITokenService tokenService) => 
