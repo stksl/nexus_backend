@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Nexus.Infrastructure.Migrations
 {
     [DbContext(typeof(NexusDbContext))]
-    [Migration("20250419095326_upd")]
+    [Migration("20250508181604_upd")]
     partial class upd
     {
         /// <inheritdoc />
@@ -470,7 +470,8 @@ namespace Nexus.Infrastructure.Migrations
                 {
                     b.HasOne("Nexus.Domain.Entities.Comment", null)
                         .WithMany()
-                        .HasForeignKey("ParentCommentId");
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nexus.Domain.Entities.Post", null)
                         .WithMany()

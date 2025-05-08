@@ -14,7 +14,8 @@ public class PostRespostConfiguration : IEntityTypeConfiguration<PostRepost>
 
         builder.HasOne<Post>()
             .WithMany()
-            .HasForeignKey(pr => pr.PostId);
+            .HasForeignKey(pr => pr.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne<AppUser>()
             .WithMany()

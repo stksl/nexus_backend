@@ -1,7 +1,9 @@
 using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Nexus.Application.Abstractions;
 using Nexus.Application.Dtos;
+using Nexus.Application.Extensions;
 using Nexus.Domain.Entities;
 
 namespace Nexus.Application;
@@ -10,6 +12,7 @@ public record UpdatePostCommand(int PostId, int UserId, string Content, string H
 
 public class UpdatePostCommandHandler : ICommandHandler<UpdatePostCommand, bool>
 {
+    private readonly IConfiguration _config;
     private readonly IPostRepository _postRepository;
     private readonly IPostReadRepository _postReadRepository;
     private readonly IPostTagRepository _postTagRepository;
@@ -18,7 +21,8 @@ public class UpdatePostCommandHandler : ICommandHandler<UpdatePostCommand, bool>
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IValidator<UpdatePostCommand> _validator;
-    public UpdatePostCommandHandler(IPostRepository postRepository,
+    public UpdatePostCommandHandler(IConfiguration config,
+        IPostRepository postRepository,
         IPostReadRepository postReadRepository,
         IPostTagRepository postTagRepository,
         ITagRepository tagRepository,
@@ -27,6 +31,7 @@ public class UpdatePostCommandHandler : ICommandHandler<UpdatePostCommand, bool>
         IMapper mapper,
         IValidator<UpdatePostCommand> validator)
     {
+        _config = config;
         _postRepository = postRepository;
         _postReadRepository = postReadRepository;
         _postTagRepository = postTagRepository;
@@ -47,6 +52,8 @@ public class UpdatePostCommandHandler : ICommandHandler<UpdatePostCommand, bool>
 
         if (post.UserId != request.UserId)
             throw new AuthException("Only owners can update their posts!");
+
+        await AhoCorasickHelper.ReplaceBannedWordsFor(request, _config["BannedWordsPath"]!);
 
         _mapper.Map(request, (Post)post);
 

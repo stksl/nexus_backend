@@ -467,7 +467,8 @@ namespace Nexus.Infrastructure.Migrations
                 {
                     b.HasOne("Nexus.Domain.Entities.Comment", null)
                         .WithMany()
-                        .HasForeignKey("ParentCommentId");
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Nexus.Domain.Entities.Post", null)
                         .WithMany()

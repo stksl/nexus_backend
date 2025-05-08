@@ -2,13 +2,15 @@ using AutoMapper;
 using FluentValidation;
 using Nexus.Application.Abstractions;
 using Nexus.Domain.Entities;
-
+using Nexus.Application.Extensions;
+using Microsoft.Extensions.Configuration;
 namespace Nexus.Application;
 
 public record CreatePostCommand(int UserId, string Content, string Headline, IEnumerable<string> Tags) : ICommand<int>;
 
 public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, int>
 {
+    private readonly IConfiguration _config;
     private readonly IPostRepository _postRepository;
     private readonly IPostTagRepository _postTagRepository;
     private readonly ITagRepository _tagRepository;
@@ -16,7 +18,8 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, int>
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IValidator<CreatePostCommand> _validator;
-    public CreatePostCommandHandler(IPostRepository postRepository, 
+    public CreatePostCommandHandler(IConfiguration config,
+        IPostRepository postRepository, 
         IPostTagRepository postTagRepository,
         ITagRepository tagRepository, 
         ITagReadRepository tagReadRepository, 
@@ -24,6 +27,7 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, int>
         IMapper mapper,
         IValidator<CreatePostCommand> validator)
     {
+        _config = config;
         _postRepository = postRepository;
         _postTagRepository = postTagRepository;
         _tagRepository = tagRepository;
@@ -35,6 +39,8 @@ public class CreatePostCommandHandler : ICommandHandler<CreatePostCommand, int>
     public async Task<int> Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
         await _validator.ValidateAndThrowAsync(request);
+
+        await AhoCorasickHelper.ReplaceBannedWordsFor(request, _config["BannedWordsPath"]!);
 
         Post post = _mapper.Map<CreatePostCommand, Post>(request);
 

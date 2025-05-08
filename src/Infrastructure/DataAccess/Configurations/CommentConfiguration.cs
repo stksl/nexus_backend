@@ -29,10 +29,12 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 
         builder.HasOne<Post>()
             .WithMany()
-            .HasForeignKey(c => c.PostId);
-        
+            .HasForeignKey(c => c.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
         builder.HasOne<Comment>()
             .WithMany()
-            .HasForeignKey(c => c.ParentCommentId);
+            .HasForeignKey(c => c.ParentCommentId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

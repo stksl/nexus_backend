@@ -14,7 +14,8 @@ public class PostLikeConfiguration : IEntityTypeConfiguration<PostLike>
 
         builder.HasOne<Post>()
             .WithMany()
-            .HasForeignKey(pl => pl.PostId);
+            .HasForeignKey(pl => pl.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne<AppUser>()
             .WithMany()
