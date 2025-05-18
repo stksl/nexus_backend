@@ -2,13 +2,13 @@ using System.Text;
 using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Configuration;
 using Nexus.Application;
 using Nexus.Application.Auth.Abstractions;
 using Nexus.Application.Abstractions;
 using Nexus.Application.Auth.Dtos;
 using Nexus.Infrastructure.DataAccess;
 using System.Net.Mail;
+using Microsoft.AspNetCore.Http;
 
 namespace Nexus.Infrastructure;
 
@@ -16,16 +16,16 @@ public class AuthService : IAuthService
 {
     private readonly ITokenService _tokenService;
     private readonly UserManager<AppUser> _userManager;
-    private readonly IConfiguration _config;
+    private readonly IHttpContextAccessor _contextAccessor;
     private readonly IBackgroundJobClient _backgroundJobClient;
-    public AuthService(ITokenService tokenService, 
+    public AuthService(ITokenService tokenService,
         UserManager<AppUser> userManager,
-        IConfiguration config,
+        IHttpContextAccessor contextAccessor, 
         IBackgroundJobClient backgroundJobClient)
     {
         _tokenService = tokenService;
         _userManager = userManager;
-        _config = config;
+        _contextAccessor = contextAccessor;
         _backgroundJobClient = backgroundJobClient;
     }
 
@@ -59,8 +59,11 @@ public class AuthService : IAuthService
 
         string encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
+        HttpRequest? request = _contextAccessor.HttpContext?.Request;
+        string appUrl = $"{request?.Scheme}://{request?.Host.Value}";
+
         string verificationBody = 
-            $"Click <a href=\"{_config["AppUrl"]}/api/auth/confirm?id={user.Id}&token={encodedToken}\">here</a> to verify your email.";
+            $"Click <a href=\"{appUrl}/api/auth/confirm?id={user.Id}&token={encodedToken}\">here</a> to verify your email.";
 
         _backgroundJobClient.Enqueue<IEmailSender>(emailSender => 
             emailSender.SendMailAsync(registerRequest.Email, "Email Verification", verificationBody));

@@ -1,6 +1,7 @@
 using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Moq;
@@ -15,7 +16,7 @@ public class AuthTest
 {
     private Mock<UserManager<AppUser>> userManagerMock
         = new Mock<UserManager<AppUser>>(Mock.Of<IUserStore<AppUser>>(), null!, null!, null!, null!, null!, null!, null!, null!);
-    private Mock<IConfiguration> configMock = new Mock<IConfiguration>();
+    private Mock<IHttpContextAccessor> httpAccessorMock = new Mock<IHttpContextAccessor>();
     private Mock<IBackgroundJobClient> backgroundJobClientMock = new Mock<IBackgroundJobClient>();
     [Fact]
     public async Task AuthRegister_Test()
@@ -42,10 +43,8 @@ public class AuthTest
             )
         ).ReturnsAsync(string.Empty);
 
-        configMock.Setup(config => config["AppUrl"])
-            .Returns(string.Empty);
 
-        AuthService authService = new AuthService(null!, userManagerMock.Object, configMock.Object, backgroundJobClientMock.Object);
+        AuthService authService = new AuthService(null!, userManagerMock.Object, httpAccessorMock.Object, backgroundJobClientMock.Object);
 
         try
         {

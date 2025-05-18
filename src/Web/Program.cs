@@ -15,6 +15,8 @@ builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
 
 builder.Services.AddControllers();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>
 {
