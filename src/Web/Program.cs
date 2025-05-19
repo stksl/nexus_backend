@@ -8,7 +8,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 //builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
-builder.Configuration.AddNexusEnvironmentVariables(args[0]);
+builder.Configuration.AddNexusEnvironmentVariables();
 builder.Services.AddControllers();
 
 builder.Services.AddHttpContextAccessor();

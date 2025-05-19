@@ -14,14 +14,15 @@ public static class AhoCorasickHelper
     /// <param name="jsonFilePath">Path to JSON file with the wordlist</param>
     /// <returns></returns>
     /// <exception cref="JsonException"></exception>
-    public static async Task ReplaceBannedWordsFor<TEntity>(TEntity entity, string jsonFilePath) where TEntity : class
+    public static async Task ReplaceBannedWordsFor<TEntity>(TEntity entity, string relativePath) where TEntity : class
     {
         foreach (PropertyInfo prop in typeof(TEntity).GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.PropertyType == typeof(string)))
         {
             string value = prop.GetValue(entity)!.ToString()!;
 
-            FileStream fs = File.OpenRead(jsonFilePath);
+            string path = Directory.GetCurrentDirectory() + relativePath;
+            FileStream fs = File.OpenRead(Directory.GetCurrentDirectory() + relativePath);
             WordBag? wordBag = await JsonSerializer.DeserializeAsync<WordBag>(fs);
             fs.Close();
 

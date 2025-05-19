@@ -3,9 +3,9 @@ namespace Nexus.WebApi.Extensions;
 
 public static class ConfigurationBuilderExtension
 {
-    public static IConfigurationBuilder AddNexusEnvironmentVariables(this IConfigurationBuilder configuration, string envFilePath)
+    public static IConfigurationBuilder AddNexusEnvironmentVariables(this IConfigurationBuilder configuration)
     {
-        DotNetEnv.Env.Load(envFilePath);
+        DotNetEnv.Env.Load();
         return configuration.AddEnvironmentVariables();
     }
 }
