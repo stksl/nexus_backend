@@ -1,7 +1,4 @@
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Nexus.Application;
-using Nexus.Domain.Entities;
+
 using Nexus.Infrastructure.Extensions;
 using Nexus.Application.Extensions;
 using Nexus.WebApi.Extensions;
@@ -10,13 +7,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
-
+//builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
+builder.Configuration.AddNexusEnvironmentVariables(args[0]);
 builder.Services.AddControllers();
 
 builder.Services.AddHttpContextAccessor();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(config =>
 {
@@ -25,7 +20,6 @@ builder.Services.AddSwaggerGen(config =>
         Title = "Nexus backend api",
         Version = "v1",
         Description = "Backend API for the Nexus project",
-
         License = new OpenApiLicense() 
         {
             Name = "MIT License",
@@ -41,6 +35,7 @@ builder.Services.AddApplicationDependencies();
 builder.Services.AddInfrastructureDependencies(builder.Configuration);
 
 var app = builder.Build();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
